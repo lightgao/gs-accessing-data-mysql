@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+
+  mysqldb:
+    image: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldb-data:/var/lib/mysql
+    environment:
+      - MYSQL_USER=springuser
+      - MYSQL_PASSWORD=ThePassword
+      - MYSQL_DATABASE=db_example
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+
+  web:
+    depends_on:
+      - mysqldb
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - gradle-cache:/root/.gradle
+    environment:
+      MYSQL_DB_HOST: mysqldb:3306
+      MYSQL_DB_USER: springuser
+      MYSQL_DB_PASSWORD: ThePassword
+    command: ./gradlew bootRun
+    # command: /bin/bash
+    # stdin_open: true
+    # tty: true
+
+volumes:
+  gradle-cache:
+  mysqldb-data:
